@@ -5,22 +5,19 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal, Optional
 
-from nrlf_converter.nrl.constants import REPLACES, UPDATE_DATE_FORMAT
+from nrlf_converter.nrl.constants import (
+    CUSTODIAN_ODS_REGEX,
+    DEFAULT_SYSTEM,
+    RELATES_TO_REPLACES_REGEX,
+    REPLACES,
+    UPDATE_DATE_FORMAT,
+)
 from nrlf_converter.nrl.errors import BadRelatesTo, CustodianError
 from nrlf_converter.utils.validation.model import ValidatedModel
 from nrlf_converter.utils.validation.validators import (
     validate_against_schema,
     validate_datetime,
     validate_literal,
-)
-
-DEFAULT_SYSTEM = "<< NO SYSTEM AVAILABLE >>"
-ODS_SYSTEM = "https://fhir.nhs.uk/Id/ods-organization-code"
-CUSTODIAN_ODS_REGEX = re.compile(
-    "^https://directory.spineservices.nhs.uk/STU3/Organization/(?P<ods_code>\w+)$"
-)
-RELATES_TO_REPLACES_REGEX = re.compile(
-    "^https://psis-sync.national.ncrs.nhs.uk/DocumentReference/(?P<logical_id>.*)$"
 )
 
 
