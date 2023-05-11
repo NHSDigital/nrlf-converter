@@ -1,7 +1,7 @@
 from typing import Union
 
-from nrlf_converter.nrl.constants import NHS_NUMBER_SYSTEM_URL
-from nrlf_converter.nrl.document_pointer import ODS_SYSTEM, DocumentPointer, RelatesTo
+from nrlf_converter.nrl.constants import NHS_NUMBER_SYSTEM_URL, ODS_SYSTEM
+from nrlf_converter.nrl.document_pointer import DocumentPointer, RelatesTo
 from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
     CodeableConcept,

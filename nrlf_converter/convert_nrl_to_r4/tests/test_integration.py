@@ -26,9 +26,7 @@ def _hack_permissions(document_reference: dict, uuid: str):
     document_reference["id"] = (
         document_reference["id"].replace(old_ods_code, ODS_CODE) + uuid
     )
-    document_reference["type"]["coding"] = [
-        {"code": DOC_TYPE, "system": "http://snomed.info/sct"}
-    ]
+    document_reference["type"]["coding"][0]["code"] = DOC_TYPE
     return document_reference
 
 
