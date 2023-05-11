@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Verify tag in this workflow is the latest
+        run: |
+          make ci--github--tag-is-latest-tag GITHUB_REF_NAME=${{ github.ref_name }}
+
+      - name: Set up Python 3.X
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9" # Set minimum python version here
+
+      - name: Install dependencies
+        run: make venv--install
+
+      - name: Verify poetry package version is equals the tag version
+        run: make ci--version-equals-latest-tag
+
+      - name: Build the package
+        run: make pkg--build
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"

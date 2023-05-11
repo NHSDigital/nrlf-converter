@@ -1,0 +1,42 @@
+name: CI
+
+on: pull_request
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9"] # Add supported python versions here
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.X
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: make venv--install
+
+      - name: Verify package version is greater than tag version
+        run: make ci--version-greater-than-latest-tag
+
+      - name: Run lint
+        run: make lint
+
+      - name: Run unit tests
+        run: make test--unit
+
+      - name: Run integration tests
+        run: make test--integration
+
+      - name: Build the package
+        run: make pkg--build
+
+      - name: Run integration tests from the package build as a third-party
+        run: make test--integration--from-build
