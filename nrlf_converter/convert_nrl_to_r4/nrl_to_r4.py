@@ -1,6 +1,10 @@
 from typing import Union
 
-from nrlf_converter.nrl.constants import ASID_SYSTEM_URL, NHS_NUMBER_SYSTEM_URL, ODS_SYSTEM
+from nrlf_converter.nrl.constants import (
+    ASID_SYSTEM_URL,
+    NHS_NUMBER_SYSTEM_URL,
+    ODS_SYSTEM,
+)
 from nrlf_converter.nrl.document_pointer import DocumentPointer, RelatesTo
 from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
@@ -49,7 +53,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
         date=_document_pointer.indexed,
         author=[
             Reference(identifier=Identifier(system=ASID_SYSTEM_URL, value=asid)),
-            _document_pointer.author
+            _document_pointer.author,
         ],
         custodian=Reference(
             identifier=Identifier(system=ODS_SYSTEM, value=_document_pointer.ods_code)
