@@ -35,7 +35,7 @@ pkg--helpers--latest-tag: ## Print the latest tag in this repo
 pkg--helpers--increment-version--patch: ## Increments the package PATCH version
 	poetry version patch
 
-pkg--helpers--increment-version--minor: ## Increments the package PATCH version
+pkg--helpers--increment-version--minor: ## Increments the package MINOR version
 	poetry version minor
 
 pkg--helpers--create-release-from-version: ci--version-greater-than-latest-tag ## Creates a new tag and sets it to
