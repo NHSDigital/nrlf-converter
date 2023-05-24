@@ -15,6 +15,7 @@ PATHS_TO_TEST_DATA = list(PATH_TO_DATA.iterdir())
 SANDBOX_URL = "https://sandbox.api.service.nhs.uk/record-locator/producer/FHIR/R4/DocumentReference"
 
 NHS_NUMBER = "3964056618"
+ASID = "230811201350"
 ODS_CODE = "Y05868"
 DOC_TYPE = "736253002"
 SUPERSEDE_ERROR_MSG = "At least one document pointer cannot be deleted because it belongs to another organisation"
@@ -45,7 +46,7 @@ def _test_end_to_end(path_to_data: Path, requests_post: FunctionType):
 
     with open(path_to_data) as f:
         document_reference = nrl_to_r4(
-            document_pointer=json.load(f), nhs_number=NHS_NUMBER
+            document_pointer=json.load(f), nhs_number=NHS_NUMBER, asid=ASID
         )
 
     document_reference = _hack_permissions(

@@ -33,7 +33,7 @@ def test__nrl_to_r4(document_pointer: DocumentPointer):
     _document_pointer = asdict(document_pointer)
     _document_pointer["class"] = _document_pointer.pop("class_")
     document_reference_json = nrl_to_r4(
-        document_pointer=_document_pointer, nhs_number="3964056618"
+        document_pointer=_document_pointer, nhs_number="3964056618", asid="230811201350"
     )
     document_reference = PydanticDocumentReference(**document_reference_json)
     _document_reference_str = json.dumps(document_reference.dict(), default=json_serial)
