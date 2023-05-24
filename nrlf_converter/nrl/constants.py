@@ -1,6 +1,7 @@
 import re
 
 NHS_NUMBER_SYSTEM_URL = "https://fhir.nhs.uk/Id/nhs-number"
+ASID_SYSTEM_URL = "https://fhir.nhs.uk/Id/nhsSpineASID"
 UPDATE_DATE_FORMAT = r"%a, %d %b %Y %H:%M:%S GMT"
 REPLACES = "replaces"
 DEFAULT_SYSTEM = "http://snomed.info/sct"
