@@ -1,0 +1,151 @@
+{
+  "attachment": {
+    "contentType": "application/pdf",
+    "creation": "2023-05-16T04:18:13+01:00",
+    "title": null,
+    "url": "https://testauto-msg.itblab.nic.cfh.nhs.uk/MentalhealthCarePlanReportRGD.pdf"
+  },
+  "author": {
+    "reference": "https://directory.spineservices.nhs.uk/STU3/Organization/RAE"
+  },
+  "class": {
+    "coding": [
+      {
+        "code": "734163000",
+        "display": "Care plan",
+        "system": "http://snomed.info/sct"
+      }
+    ],
+    "text": null
+  },
+  "content": [
+    {
+      "attachment": {
+        "contentType": "application/pdf",
+        "creation": "2023-05-16T04:18:13+01:00",
+        "data": "",
+        "hash": "",
+        "language": "",
+        "url": "https://testauto-msg.itblab.nic.cfh.nhs.uk/MentalhealthCarePlanReportRGD.pdf"
+      },
+      "extension": [
+        {
+          "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-NRL-ContentStability-1",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "dynamic",
+                "display": "Dynamic",
+                "id": "",
+                "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-ContentStability-1"
+              }
+            ]
+          }
+        }
+      ],
+      "format": {
+        "code": "urn:nhs-ic:unstructured",
+        "display": "Unstructured Document",
+        "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1"
+      }
+    },
+    {
+      "attachment": {
+        "contentType": "text/html",
+        "creation": "2023-05-16T04:18:13+01:00",
+        "data": "",
+        "hash": "",
+        "language": "",
+        "url": "https://www.google.co.uk/"
+      },
+      "extension": [
+        {
+          "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-NRL-ContentStability-1",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "dynamic",
+                "display": "Dynamic",
+                "id": "",
+                "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-ContentStability-1"
+              }
+            ]
+          }
+        }
+      ],
+      "format": {
+        "code": "urn:nhs-ic:record-contact",
+        "display": "Contact details (HTTP Unsecured)",
+        "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1"
+      }
+    }
+  ],
+  "context": {
+    "period": {
+      "end": null,
+      "start": null
+    },
+    "practiceSetting": {
+      "practiceSettingCoding": [
+        {
+          "code": "310167005",
+          "display": "Urology service",
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "practiceSettingText": null
+    }
+  },
+  "created": null,
+  "custodian": {
+    "reference": "https://directory.spineservices.nhs.uk/STU3/Organization/RQI"
+  },
+  "format": {
+    "code": "urn:nhs-ic:unstructured",
+    "display": "Unstructured Document",
+    "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1"
+  },
+  "indexed": "2023-05-16T15:18:16+00:00",
+  "lastModified": "Tue, 16 May 2023 15:18:16 GMT",
+  "logicalIdentifier": {
+    "logicalId": "e1d1ec85-f3fc-11ed-9fec-000c290de2c0-58564a504f46504e4450"
+  },
+  "masterIdentifier": {
+    "system": "",
+    "value": ""
+  },
+  "meta": {
+    "lastUpdated": "Tue, 16 May 2023 15:18:16 GMT",
+    "profile": [
+      "https://fhir.nhs.uk/STU3/StructureDefinition/NRL-DocumentReference-1"
+    ],
+    "versionId": "1"
+  },
+  "relatesTo": {
+    "code": null,
+    "target": {
+      "identifier": {
+        "system": null,
+        "value": null
+      },
+      "reference": null
+    }
+  },
+  "removed": false,
+  "stability": {
+    "coding": [
+      {
+        "code": "dynamic",
+        "display": "Dynamic",
+        "id": "",
+        "system": "https://fhir.nhs.uk/STU3/CodeSystem/NRL-ContentStability-1"
+      }
+    ],
+    "text": null
+  },
+  "status": "current",
+  "type": {
+    "code": "736253002",
+    "display": "Mental health crisis plan"
+  }
+}
