@@ -3,23 +3,20 @@
 Converts the core NRL event to a valid FHIR R4 DocumentReference
 
 - [For users](#for-users)
-  - [Installation](#installation)
+  - [Installation](#installation-into-spineii)
   - [Usage](#usage)
-- [For developer](#for-developers)
+- [For developers](#for-developers)
   - [In General](#in-general)
   - [First time setup](#first-time-setup)
   - [Every time you start a new session](#every-time-you-start-a-new-session)
   - [Workflow](#workflow)
-    - [Increment Version](#increment-version)
-    - [Features](#features)
-    - [Releases](#releases)
-    - [Publish to PyPI](#publish-to-pypi)
+  - [Workflow gory details](#workflow-gory-details)
   - [Tests](#tests)
     - [Unit](#unit)
 
 # For Users of this package
 
-## Installation from PyPI
+## Installation into spineii
 
 UPDATE ME
 
@@ -30,12 +27,12 @@ you get back an "R4 DocumentReference" (here we described as a `document_referen
 
 Both input and output are `dict` objects. You must also supply an NHS Number, expected
 to be consistent with the logical ID of the `document_pointer` - however we do not
-validate this.
+validate this. You must also supply an ASID.
 
 ```python
 from nrlf_converter import nrl_to_r4
 
-document_reference = nrl_to_r4(document_pointer={...}, nhs_number="12345678910")
+document_reference = nrl_to_r4(document_pointer={...}, nhs_number="12345678910", asid="230811201350")
 ```
 
 If the NRL-to-R4 conversion is unsuccessful, one of the following errors is raised:
@@ -52,7 +49,7 @@ You can catch these errors by importing them from the top-level module:
 from nrlf_converter import nrl_to_r4, ValidationError, BadRelatesTo, CustodianError
 
 try:
-  document_reference = nrl_to_r4(document_pointer={...}, nhs_number="12345678910")
+  document_reference = nrl_to_r4(document_pointer={...}, nhs_number="12345678910", asid="230811201350")
 except ValidationError:
   ...
 except BadRelatesTo:
@@ -106,7 +103,22 @@ source .venv/bin/activate
 
 ## Workflow
 
-### Features
+To create new features:
+
+1. Create feature branch
+2. Make sure the version is greater than the latest tag with `make ci--version-greater-than-latest-tag`
+3. If you need to increment the version use `make pkg--helpers--increment-version--patch` (you can also change the version manually inside the `pyproject.toml`)
+4. Create your Pull Request
+5. Merge your Pull Request.
+
+To create a release from the latest tag (with wheels, tarballs etc, ready for spineii):
+
+1. Follow the Create a Release instructions
+2. Once the Release Action has finished, the wheel or tarball required for spineii can be found in https://github.com/NHSDigital/nrlf-converter/releases
+
+## Workflow gory details
+
+### Feature branches
 
 Create features branches according to the naming convention:
 
@@ -124,13 +136,13 @@ make pkg--helpers--latest-tag
 
 ### Increment version
 
-Increment patch version (`a.b.c --> a.b.(c+1)`):
+Increment patch version (e.g. `0.0.1` --> `0.0.2`):
 
 ```console
 make pkg--helpers--increment-version--patch
 ```
 
-Increment minor version (`a.b.c --> a.(b+1).c`):
+Increment minor version (e.g. `0.0.3` --> `0.1.0`):
 
 ```console
 make pkg--helpers--increment-version--minor
