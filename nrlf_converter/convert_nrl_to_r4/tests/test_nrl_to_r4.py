@@ -4,15 +4,23 @@ from datetime import datetime
 from unittest import mock
 
 import hypothesis
-from hypothesis.strategies import text
+import pytest
+from hypothesis.strategies import dictionaries, integers, just, lists, text
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
-from nrlf_converter.convert_nrl_to_r4.nrl_to_r4 import _nrlf_id, _relates_to, nrl_to_r4
+from nrlf_converter.convert_nrl_to_r4.nrl_to_r4 import (
+    _nrlf_id,
+    _relates_to,
+    nrl_to_r4,
+    reject_empty_args,
+)
 from nrlf_converter.nrl.document_pointer import DocumentPointer
 from nrlf_converter.nrl.tests.test_document_pointer import valid_document_pointer
 from nrlf_converter.r4.document_reference import DocumentReference as _DocumentReference
+from nrlf_converter.utils.constants import EMPTY_VALUES
 from nrlf_converter.utils.utils import strip_empty_json_paths
+from nrlf_converter.utils.validation.errors import ValidationError
 
 
 @dataclass(config=ConfigDict(extra="forbid"))
@@ -58,3 +66,29 @@ def test__relates_to():
         "code": "CODE",
         "target": {"identifier": {"value": "ODS_CODE-LOGICAL_ID"}},
     }
+
+
+@reject_empty_args
+def my_func(a, b, c, d):
+    return f"{a}, {b}, {c}, {d}"
+
+
+@hypothesis.given(
+    a=integers(),
+    b=text(min_size=1),
+    c=lists(integers(), min_size=1),
+    d=dictionaries(keys=integers(), values=just("value"), min_size=1),
+)
+def test_reject_empty_args(a, b, c, d):
+    assert my_func(a, b, c, d) == f"{a}, {b}, {c}, {d}"
+
+
+@pytest.mark.parametrize("a", EMPTY_VALUES)
+@hypothesis.given(
+    b=text(min_size=1),
+    c=lists(integers(), min_size=1),
+    d=dictionaries(keys=integers(), values=just("value"), min_size=1),
+)
+def test_reject_empty_args_fail(a, b, c, d):
+    with pytest.raises(ValidationError):
+        my_func(a, b, c, d)

@@ -2,12 +2,15 @@ import json
 from datetime import datetime as dt
 from http import HTTPStatus
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from types import FunctionType
 from uuid import uuid4
 
 import pytest
 
 from nrlf_converter import nrl_to_r4
+from nrlf_converter.utils.constants import EMPTY_VALUES
+from nrlf_converter.utils.validation.errors import ValidationError
 
 PATH_TO_HERE = Path(__file__).parent
 PATH_TO_DATA = PATH_TO_HERE.parent.parent / "nrl" / "tests" / "data"
@@ -41,12 +44,14 @@ def _create_headers(uuid: str):
     }
 
 
-def _test_end_to_end(path_to_data: Path, requests_post: FunctionType):
+def _test_end_to_end(
+    path_to_data: Path, requests_post: FunctionType, nhs_number=NHS_NUMBER, asid=ASID
+):
     uuid = f"nhsd--nrl_to_r4--{dt.now().isoformat()}--{uuid4()}"
 
     with open(path_to_data) as f:
         document_reference = nrl_to_r4(
-            document_pointer=json.load(f), nhs_number=NHS_NUMBER, asid=ASID
+            document_pointer=json.load(f), nhs_number=nhs_number, asid=asid
         )
 
     document_reference = _hack_permissions(
@@ -58,6 +63,28 @@ def _test_end_to_end(path_to_data: Path, requests_post: FunctionType):
     print("and body")  # noqa: T201
     print(document_reference)  # noqa: T201
     return requests_post(data=document_reference, headers=headers)
+
+
+@pytest.mark.parametrize(["nhs_number", "asid"], ([NHS_NUMBER, None], [None, ASID]))
+@pytest.mark.parametrize("path_to_data", PATHS_TO_TEST_DATA)
+def test_that_function_calls_cannot_be_emptyish(nhs_number, asid, path_to_data):
+    with pytest.raises(ValidationError):
+        _test_end_to_end(
+            path_to_data=path_to_data,
+            requests_post=None,
+            nhs_number=nhs_number,
+            asid=asid,
+        )
+
+
+@pytest.mark.parametrize("empty_value", EMPTY_VALUES)
+def test_that_test_data_cannot_be_empty(empty_value):
+    with NamedTemporaryFile() as f:
+        f.write(json.dumps(empty_value).encode())
+        f.flush()
+
+        with pytest.raises(ValidationError):
+            _test_end_to_end(path_to_data=f.name, requests_post=None)
 
 
 @pytest.mark.parametrize("path_to_data", PATHS_TO_TEST_DATA)

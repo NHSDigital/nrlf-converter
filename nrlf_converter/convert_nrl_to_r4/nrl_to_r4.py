@@ -1,3 +1,5 @@
+from functools import wraps
+from itertools import chain
 from typing import Union
 
 from nrlf_converter.nrl.constants import (
@@ -16,6 +18,9 @@ from nrlf_converter.r4.document_reference import (
     Identifier,
     Reference,
 )
+from nrlf_converter.utils.constants import EMPTY_VALUES, JSON_TYPES
+from nrlf_converter.utils.utils import strip_empty_json_paths
+from nrlf_converter.utils.validation.errors import ValidationError
 
 
 def _nrlf_id(ods_code: str, logical_id: str):
@@ -37,6 +42,26 @@ def _relates_to(
     return relatesTo
 
 
+def _is_empty(obj):
+    if type(obj) in JSON_TYPES:
+        obj = strip_empty_json_paths(obj)
+    return obj in EMPTY_VALUES
+
+
+def reject_empty_args(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if any(map(_is_empty, chain(args, kwargs.values()))):
+            raise ValidationError(
+                message=f"One or more empty or null values passed to {fn.__name__}"
+            )
+
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+@reject_empty_args
 def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
     _document_pointer = DocumentPointer.parse_obj(document_pointer)
     document_reference = DocumentReference(
