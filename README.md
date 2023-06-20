@@ -18,7 +18,7 @@ Converts the core NRL event to a valid FHIR R4 DocumentReference
 
 ## Installation into spineii
 
-UPDATE ME
+https://nhsd-confluence.digital.nhs.uk/display/SPINE/Import+the+NRLF+R4+Converter+Package+into+Spine
 
 ## Usage
 
