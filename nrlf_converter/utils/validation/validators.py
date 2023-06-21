@@ -12,10 +12,17 @@ from .errors import (
     TypeMismatch,
     UnexpectedField,
 )
-from .model import DEFAULT_NOT_SET, ValidationMetadata
+from .model import DEFAULT_NOT_SET, ValidatedModel, ValidationMetadata
 
 SchemaType = TypeVar("SchemaType")
 ObjType = TypeVar("ObjType")
+
+
+def _get_loose_schema(item):
+    if issubclass(type(item), ValidatedModel):
+        return dict
+    elif type(item) is dt:
+        return str
 
 
 def field_validator(obj, optional=False, default=DEFAULT_NOT_SET, **kwargs) -> Field:
@@ -55,7 +62,7 @@ def _validate_against_schema(
         _schema = schema
         schema = list
 
-    if type(obj) is dict:
+    if type(obj) is dict and schema is not dict:
         schema_fields = fields(schema)
         for field in schema_fields:
             value = obj.get(field.name)
@@ -79,7 +86,7 @@ def _validate_against_schema(
                 )
         obj = schema(**obj)
 
-    if type(obj) is not schema:
+    if type(obj) is not schema and _get_loose_schema(obj) is not schema:
         raise TypeMismatch(
             f"Item '{obj}' (type '{type(obj).__name__}') was expected to be of type '{schema.__name__}'"
         )
@@ -108,11 +115,12 @@ def validate_datetime(date_format: str = None, optional=False):
 
 
 def _validate_datetime(obj, date_format: str = None):
+    _obj = obj.rstrip("Z")
     try:
         if date_format is None:
-            dt.fromisoformat(obj)
+            dt.fromisoformat(_obj)
         else:
-            dt.strptime(obj, date_format)
+            dt.strptime(_obj, date_format)
     except (ValueError, TypeError):
         raise InvalidValue(f"Could not parse datetime from '{obj}'.") from None
     return obj
