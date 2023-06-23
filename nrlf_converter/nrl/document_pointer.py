@@ -186,7 +186,7 @@ class DocumentPointer(ValidatedModel):
     stability: Optional[CodeableConcept] = validate_against_schema(
         schema=dict, optional=True
     )
-    removed: Literal[False] = validate_literal(value=False)
+    removed: Optional[bool] = validate_against_schema(schema=bool, optional=True)
 
     @property
     def ods_code(self):
