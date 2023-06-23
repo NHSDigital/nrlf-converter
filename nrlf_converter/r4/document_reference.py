@@ -6,29 +6,40 @@ from nrlf_converter.utils.utils import strip_empty_json_paths
 
 
 @dataclass
-class Identifier:
-    value: str
-    system: Optional[str] = None
-
-
-@dataclass
-class Reference:
-    identifier: Optional[Identifier] = None
-    reference: Optional[str] = None
-
-
-@dataclass
 class Coding:
     code: str
     system: str
     display: Optional[str] = None
     id: Optional[str] = None
+    userSelected: Optional[bool] = None
 
 
 @dataclass
 class CodeableConcept:
     id: Optional[str] = None
     coding: Optional[List[Coding]] = None
+
+
+@dataclass
+class Period:
+    start: Optional[datetime]
+    end: Optional[datetime]
+
+
+@dataclass
+class Identifier:
+    value: str
+    system: Optional[str] = None
+    use: Optional[str] = None
+    type: Optional[CodeableConcept] = None
+    period: Optional[Period] = None
+    assigner: Optional[dict] = None
+
+
+@dataclass
+class Reference:
+    identifier: Optional[Identifier] = None
+    reference: Optional[str] = None
 
 
 @dataclass
@@ -46,6 +57,8 @@ class Attachment:
     language: Optional[str] = None
     creation: Optional[str] = None
     hash: Optional[str] = None
+    size: Optional[int] = None
+    title: Optional[str] = None
 
 
 @dataclass
@@ -53,12 +66,6 @@ class DocumentReferenceContent:
     attachment: Attachment
     format: Coding
     id: Optional[str] = None
-
-
-@dataclass
-class Period:
-    start: Optional[datetime]
-    end: Optional[datetime]
 
 
 @dataclass

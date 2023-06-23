@@ -29,6 +29,8 @@ class Attachment(ValidatedModel):
     language: Optional[str] = validate_against_schema(schema=str, optional=True)
     creation: Optional[str] = validate_against_schema(schema=str, optional=True)
     hash: Optional[str] = validate_against_schema(schema=str, optional=True)
+    size: Optional[int] = validate_against_schema(schema=int, optional=True)
+    title: Optional[str] = validate_against_schema(schema=str, optional=True)
 
 
 @dataclass
@@ -39,6 +41,7 @@ class Coding(ValidatedModel):
     system: Optional[str] = validate_against_schema(
         schema=str, optional=True, default=DEFAULT_SYSTEM
     )
+    userSelected: Optional[bool] = validate_against_schema(schema=bool, optional=True)
 
 
 @dataclass
@@ -108,6 +111,13 @@ class Identifier(ValidatedModel):
     system: str = validate_against_schema(schema=str)
     value: str = validate_against_schema(schema=str)
 
+    use: Optional[str] = validate_against_schema(schema=str, optional=True)
+    type: Optional[CodeableConcept] = validate_against_schema(
+        schema=CodeableConcept, optional=True
+    )
+    period: Optional[Period] = validate_against_schema(schema=Period, optional=True)
+    assigner: Optional[Reference] = validate_against_schema(schema=dict, optional=True)
+
 
 @dataclass
 class Reference(ValidatedModel):
@@ -115,12 +125,7 @@ class Reference(ValidatedModel):
     identifier: Optional[Identifier] = validate_against_schema(
         schema=Identifier, optional=True
     )
-
-
-@dataclass
-class DataDocumentType(ValidatedModel):
-    code: str = validate_against_schema(schema=str)
-    display: str = validate_against_schema(schema=str)
+    display: Optional[str] = validate_against_schema(schema=str, optional=True)
 
 
 @dataclass
@@ -167,16 +172,21 @@ class DocumentPointer(ValidatedModel):
     )
     # Used to update DocumentPointer.[dates]
     lastModified: datetime = validate_datetime(date_format=UPDATE_DATE_FORMAT)
-    # Not used in transformation to DocumentReference
+    # None of the following are used in transformation to DocumentReference
+    # so loose validation is applied (i.e. str, dict instead of more complex objects)
     masterIdentifier: Optional[Identifier] = validate_against_schema(
-        schema=Identifier, optional=True
+        schema=dict, optional=True
     )
-    created: Optional[datetime] = validate_datetime(optional=True)
-    attachment: Attachment = validate_against_schema(schema=Attachment)
-    format: Coding = validate_against_schema(schema=Coding)
-    meta: Metadata = validate_against_schema(schema=Metadata)
-    stability: CodeableConcept = validate_against_schema(schema=CodeableConcept)
-    removed: Literal[False] = validate_literal(value=False)
+    created: Optional[datetime] = validate_against_schema(schema=str, optional=True)
+    attachment: Optional[Attachment] = validate_against_schema(
+        schema=dict, optional=True
+    )
+    format: Optional[Coding] = validate_against_schema(schema=dict, optional=True)
+    meta: Optional[Metadata] = validate_against_schema(schema=dict, optional=True)
+    stability: Optional[CodeableConcept] = validate_against_schema(
+        schema=dict, optional=True
+    )
+    removed: Optional[bool] = validate_against_schema(schema=bool, optional=True)
 
     @property
     def ods_code(self):
