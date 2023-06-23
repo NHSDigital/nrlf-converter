@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nrlf-converter"
-version = "0.0.4"
+version = "0.0.5"
 description = "NHS Clinicals Record Locator Document Pointer to HL7 FHIR R4 DocumentReference conversion"
 authors = ["NHSDigital"]
 license = "MIT"
