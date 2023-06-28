@@ -153,7 +153,7 @@ make pkg--helpers--increment-version--minor
 Create a release:
 
 ```console
-make pkg--helpers--create-release-from-current-version
+make pkg--helpers--create-release-from-version
 ```
 
 A tag will be created tag based on the version specified in the `pyproject.toml`, then pushed to GitHub in order to trigger a release.

@@ -42,6 +42,7 @@ class Coding(ValidatedModel):
         schema=str, optional=True, default=DEFAULT_SYSTEM
     )
     userSelected: Optional[bool] = validate_against_schema(schema=bool, optional=True)
+    version: Optional[str] = validate_against_schema(schema=str, optional=True)
 
 
 @dataclass

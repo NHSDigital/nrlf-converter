@@ -12,6 +12,7 @@ class Coding:
     display: Optional[str] = None
     id: Optional[str] = None
     userSelected: Optional[bool] = None
+    version: Optional[str] = None
 
 
 @dataclass
