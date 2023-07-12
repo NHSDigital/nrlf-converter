@@ -71,7 +71,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
         ),
         status=_document_pointer.status,
         type=CodeableConcept(coding=[_document_pointer.type]),
-        category=[_document_pointer.class_],
+        category=[_document_pointer.class_] if _document_pointer.class_ else None,
         subject=Reference(
             identifier=Identifier(system=NHS_NUMBER_SYSTEM_URL, value=nhs_number)
         ),

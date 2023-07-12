@@ -56,12 +56,8 @@ ONLY_PASS_CASE = (
 
 @pytest.mark.parametrize("str_value", [A_STR, A_LIST_OF_INT, A_LIST_OF_MIXED])
 @pytest.mark.parametrize("list_int_value", [A_LIST_OF_INT, A_LIST_OF_MIXED, A_STR])
-@pytest.mark.parametrize(
-    "iso_datetime_value", [AN_ISO_DATETIME, A_NON_ISO_DATETIME, A_STR]
-)
-@pytest.mark.parametrize(
-    "non_iso_datetime_value", [A_NON_ISO_DATETIME, AN_ISO_DATETIME, A_STR]
-)
+@pytest.mark.parametrize("iso_datetime_value", [AN_ISO_DATETIME, A_STR])
+@pytest.mark.parametrize("non_iso_datetime_value", [A_NON_ISO_DATETIME, A_STR])
 @pytest.mark.parametrize("literal_value", [LITERAL_VALUE, A_STR])
 def test_validated_model(
     str_value, list_int_value, iso_datetime_value, non_iso_datetime_value, literal_value

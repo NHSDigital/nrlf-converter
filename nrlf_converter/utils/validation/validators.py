@@ -1,3 +1,4 @@
+import re
 from dataclasses import Field
 from dataclasses import field as dataclasses_field
 from dataclasses import fields
@@ -13,6 +14,10 @@ from .errors import (
     UnexpectedField,
 )
 from .model import DEFAULT_NOT_SET, ValidatedModel, ValidationMetadata
+
+R4_DATETIME_REGEX = re.compile(
+    "([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))?)?)?"
+)
 
 SchemaType = TypeVar("SchemaType")
 ObjType = TypeVar("ObjType")
@@ -122,5 +127,7 @@ def _validate_datetime(obj, date_format: str = None):
         else:
             dt.strptime(_obj, date_format)
     except (ValueError, TypeError):
-        raise InvalidValue(f"Could not parse datetime from '{obj}'.") from None
+        result = R4_DATETIME_REGEX.match(_obj)
+        if result is None:
+            raise InvalidValue(f"Could not parse datetime from '{obj}'.") from None
     return obj
