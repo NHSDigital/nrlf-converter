@@ -191,7 +191,9 @@ class RelatesTo(ValidatedModel):
 class DocumentPointer(ValidatedModel):
     status: Literal["current"] = validate_literal(value="current")
     type: Coding = validate_against_schema(schema=Coding)
-    class_: CodeableConcept = validate_against_schema(schema=CodeableConcept)
+    class_: Optional[CodeableConcept] = validate_against_schema(
+        schema=CodeableConcept, optional=True
+    )
     indexed: datetime = validate_datetime()
     author: Reference = validate_against_schema(schema=Reference)
     custodian: Reference = validate_against_schema(schema=Reference)
