@@ -180,8 +180,9 @@ class RelatesTo(ValidatedModel):
 
         if result is None:
             raise BadRelatesTo(
-                f"Could not parse an logicalId from '{reference}'"
-                f" using patterns '{(regex.pattern for regex in RELATES_TO_REPLACES_REFERENCE_REGEXES)}'"
+                f"Could not parse an logicalId from either field 'reference' or 'identifier.value' in "
+                f"'{self.target}' using patterns "
+                f"'{[regex.pattern for regex in RELATES_TO_REPLACES_REFERENCE_REGEXES + RELATES_TO_REPLACES_IDENTIFIER_REGEXES]}'"
             )
 
         return result.groupdict()["logical_id"]
