@@ -8,7 +8,8 @@ from typing import Literal, Optional
 from nrlf_converter.nrl.constants import (
     CUSTODIAN_ODS_REGEX,
     DEFAULT_SYSTEM,
-    RELATES_TO_REPLACES_REGEX,
+    RELATES_TO_REPLACES_IDENTIFIER_REGEXES,
+    RELATES_TO_REPLACES_REFERENCE_REGEXES,
     REPLACES,
     UPDATE_DATE_FORMAT,
 )
@@ -129,6 +130,15 @@ class Reference(ValidatedModel):
     display: Optional[str] = validate_against_schema(schema=str, optional=True)
 
 
+def _get_relates_to_target(value: str, regexes: list[re.Pattern]):
+    result: re.Match = None
+    for regex in regexes:
+        result = regex.match(value)
+        if result is not None:
+            break
+    return result
+
+
 @dataclass
 class RelatesTo(ValidatedModel):
     code: Optional[str] = validate_against_schema(schema=str, optional=True)
@@ -139,17 +149,42 @@ class RelatesTo(ValidatedModel):
         if self.code != REPLACES:
             return None
 
-        if self.target.reference is None:
+        has_reference = self.target.reference is not None
+        has_identifier = (
+            self.target.identifier and self.target.identifier.value is not None
+        )
+
+        result: re.Match = None
+        if has_reference and has_identifier:
             raise BadRelatesTo(
                 f"DocumentPointer 'relatesTo.code' equals '{REPLACES}' but "
-                "no value was provided for 'relatesTo.target.reference'"
+                "a value was provided for both 'relatesTo.target.reference' and "
+                "'relatesTo.target.identifier.value', so the relatesTo is ambiguous."
             )
-        result: re.Match = RELATES_TO_REPLACES_REGEX.match(self.target.reference)
+        elif has_reference:
+            result = _get_relates_to_target(
+                value=self.target.reference,
+                regexes=RELATES_TO_REPLACES_REFERENCE_REGEXES,
+            )
+        elif has_identifier:
+            result = _get_relates_to_target(
+                value=self.target.identifier.value,
+                regexes=RELATES_TO_REPLACES_IDENTIFIER_REGEXES,
+            )
+        else:
+            raise BadRelatesTo(
+                f"DocumentPointer 'relatesTo.code' equals '{REPLACES}' but "
+                "no value was provided for either 'relatesTo.target.reference' "
+                "or 'relatesTo.target.identifier.value'"
+            )
+
         if result is None:
             raise BadRelatesTo(
-                f"Could not parse an logicalId from '{self.target.reference}'"
-                f" using pattern '{RELATES_TO_REPLACES_REGEX.pattern}'"
+                f"Could not parse an logicalId from either field 'reference' or 'identifier.value' in "
+                f"'{self.target}' using patterns "
+                f"'{[regex.pattern for regex in RELATES_TO_REPLACES_REFERENCE_REGEXES + RELATES_TO_REPLACES_IDENTIFIER_REGEXES]}'"
             )
+
         return result.groupdict()["logical_id"]
 
 
@@ -157,7 +192,9 @@ class RelatesTo(ValidatedModel):
 class DocumentPointer(ValidatedModel):
     status: Literal["current"] = validate_literal(value="current")
     type: Coding = validate_against_schema(schema=Coding)
-    class_: CodeableConcept = validate_against_schema(schema=CodeableConcept)
+    class_: Optional[CodeableConcept] = validate_against_schema(
+        schema=CodeableConcept, optional=True
+    )
     indexed: datetime = validate_datetime()
     author: Reference = validate_against_schema(schema=Reference)
     custodian: Reference = validate_against_schema(schema=Reference)

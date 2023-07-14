@@ -129,11 +129,51 @@ def test_ods_code_raises_custodian_error(document_pointer: DocumentPointer):
             reference=just(
                 "https://psis-sync.national.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID"
             ),
+            identifier=just(None),
         ),
     )
 )
-def test_relates_to_logical_id(relates_to: RelatesTo):
+def test_relates_to_logical_id_from_reference(relates_to: RelatesTo):
     assert relates_to.logical_id == "THE_LOGICAL_ID"
+
+
+@hypothesis.given(
+    relates_to=builds(
+        RelatesTo,
+        code=just("replaces"),
+        target=builds(
+            Reference,
+            identifier=builds(
+                Identifier, value=just("urn:uuid:THE_LOGICAL_ID"), system=just("system")
+            ),
+            reference=just(None),
+        ),
+    )
+)
+def test_relates_to_logical_id_from_identifier(relates_to: RelatesTo):
+    assert relates_to.logical_id == "THE_LOGICAL_ID"
+
+
+@hypothesis.given(
+    relates_to=builds(
+        RelatesTo,
+        code=just("replaces"),
+        target=builds(
+            Reference,
+            identifier=builds(
+                Identifier, value=just("urn:uuid:THE_LOGICAL_ID"), system=just("system")
+            ),
+            reference=just(
+                "https://psis-sync.national.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID"
+            ),
+        ),
+    )
+)
+def test_relates_to_logical_id_raises_bad_relates_if_both_reference_and_identifier_present(
+    relates_to: RelatesTo,
+):
+    with pytest.raises(BadRelatesTo):
+        relates_to.logical_id
 
 
 @hypothesis.given(
