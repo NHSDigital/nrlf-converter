@@ -1,15 +1,18 @@
+from dataclasses import asdict
 from functools import wraps
 from itertools import chain
-from typing import Union
+from typing import Generator, List, Union
 
 from nrlf_converter.nrl.constants import (
     ASID_SYSTEM_URL,
+    HTTPS_TO_SSP,
     NHS_NUMBER_SYSTEM_URL,
     ODS_SYSTEM,
 )
-from nrlf_converter.nrl.document_pointer import DocumentPointer, RelatesTo
+from nrlf_converter.nrl.document_pointer import ContentItem, DocumentPointer, RelatesTo
 from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
+    Attachment,
     CodeableConcept,
     DocumentReference,
     DocumentReferenceContent,
@@ -42,28 +45,69 @@ def _relates_to(
     return relatesTo
 
 
+def _https_to_ssp(https_url: str):
+    ssp_url = HTTPS_TO_SSP(string=https_url)
+    if ssp_url == https_url:
+        raise ValidationError(
+            f"Failed substitution of 'https://' to 'ssp://' in URL '{https_url}'"
+        )
+    return ssp_url
+
+
+def _content_items(
+    content_items: List[ContentItem],
+) -> Generator[DocumentReferenceContent, None, None]:
+    for content in content_items:
+        attachment = asdict(content.attachment)
+        if content.format.is_ssp():
+            attachment["url"] = _https_to_ssp(content.attachment.url)
+
+        yield DocumentReferenceContent(
+            attachment=Attachment(**attachment), format=content.format
+        )
+
+
 def _is_empty(obj):
     if type(obj) in JSON_TYPES:
         obj = strip_empty_json_paths(obj)
     return obj in EMPTY_VALUES
 
 
-def reject_empty_args(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        if any(map(_is_empty, chain(args, kwargs.values()))):
-            raise ValidationError(
-                message=f"One or more empty or null values passed to {fn.__name__}"
+def reject_empty_args(exemptions: list = None):
+    if not exemptions:
+        exemptions = []
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            all_args = chain(
+                args, (v for k, v in kwargs.items() if k not in exemptions)
             )
+            if any(map(_is_empty, all_args)):
+                raise ValidationError(
+                    message=f"One or more empty or null values passed to {fn.__name__}"
+                )
 
-        return fn(*args, **kwargs)
+            return fn(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
-@reject_empty_args
-def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
+@reject_empty_args(exemptions=("asid",))
+def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict:
     _document_pointer = DocumentPointer.parse_obj(document_pointer)
+    if _document_pointer.is_ssp() and not asid:
+        raise ValidationError(
+            message="ASID must be provided for DocumentPointers with SSP content"
+        )
+    asid_author: list[Reference] = (
+        [Reference(identifier=Identifier(system=ASID_SYSTEM_URL, value=asid))]
+        if asid
+        else []
+    )
+
     document_reference = DocumentReference(
         id=_nrlf_id(
             ods_code=_document_pointer.ods_code,
@@ -76,10 +120,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
             identifier=Identifier(system=NHS_NUMBER_SYSTEM_URL, value=nhs_number)
         ),
         date=_document_pointer.indexed,
-        author=[
-            Reference(identifier=Identifier(system=ASID_SYSTEM_URL, value=asid)),
-            _document_pointer.author,
-        ],
+        author=(asid_author + [_document_pointer.author]),
         custodian=Reference(
             identifier=Identifier(system=ODS_SYSTEM, value=_document_pointer.ods_code)
         ),
@@ -89,12 +130,11 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str) -> dict:
                 ods_code=_document_pointer.ods_code,
             )
         ],
-        content=[
-            DocumentReferenceContent(
-                attachment=content.attachment, format=content.format
-            )
-            for content in _document_pointer.content
-        ],
+        content=(
+            list(_content_items(content_items=_document_pointer.content))
+            if _document_pointer.content
+            else []
+        ),
         context=DocumentReferenceContext(
             period=_document_pointer.context.period,
             practiceSetting=CodeableConcept(

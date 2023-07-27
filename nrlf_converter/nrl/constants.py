@@ -1,4 +1,5 @@
 import re
+from functools import partial
 
 NHS_NUMBER_SYSTEM_URL = "https://fhir.nhs.uk/Id/nhs-number"
 ASID_SYSTEM_URL = "https://fhir.nhs.uk/Id/nhsSpineASID"
@@ -21,3 +22,13 @@ RELATES_TO_REPLACES_REFERENCE_REGEXES = [
 RELATES_TO_REPLACES_IDENTIFIER_REGEXES = [
     re.compile("^urn:uuid:(?P<logical_id>.*)$"),
 ]
+
+
+class SSP:
+    CODE = "urn:nhs-ic:unstructured"
+    SYSTEM = "https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1"
+
+
+HTTPS_TO_SSP = partial(
+    re.compile(pattern=r"(https://)(.*)").sub, repl=r"ssp://\2", count=1
+)

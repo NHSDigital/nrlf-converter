@@ -7,7 +7,7 @@ import pytest
 from hypothesis.strategies import builds, data, datetimes, just, lists, text
 
 from nrlf_converter import BadRelatesTo, CustodianError, ValidationError
-from nrlf_converter.nrl.constants import UPDATE_DATE_FORMAT
+from nrlf_converter.nrl.constants import SSP, UPDATE_DATE_FORMAT
 from nrlf_converter.nrl.document_pointer import (
     Attachment,
     CodeableConcept,
@@ -48,6 +48,23 @@ non_empty_attachment = builds(Attachment, url=non_empty_str, contentType=non_emp
 non_empty_codeable_concept = builds(CodeableConcept, coding=non_empty_list_of_coding)
 non_empty_relates_to = builds(RelatesTo, code=non_empty_str, target=non_empty_reference)
 
+non_ssp_content_items = lists(
+    builds(ContentItem, format=non_empty_coding, attachment=non_empty_attachment),
+    min_size=1,
+)
+ssp_content_items = lists(
+    builds(
+        ContentItem,
+        format=builds(
+            Coding, system=just(SSP.SYSTEM), code=just(SSP.CODE), display=non_empty_str
+        ),
+        attachment=builds(
+            Attachment, url=just("https://foo.bar"), contentType=non_empty_str
+        ),
+    ),
+    min_size=1,
+)
+
 valid_document_pointer = builds(
     DocumentPointer,
     type=non_empty_coding,
@@ -62,10 +79,7 @@ valid_document_pointer = builds(
         identifier=non_empty_identifier,
     ),
     relatesTo=non_empty_relates_to,
-    content=lists(
-        builds(ContentItem, format=non_empty_coding, attachment=non_empty_attachment),
-        min_size=1,
-    ),
+    content=non_ssp_content_items,
     context=builds(
         Context,
         period=builds(Period, start=iso_dates, end=iso_dates),
@@ -187,3 +201,13 @@ def test_relates_to_logical_id_raises_bad_relates_to_error(relates_to: RelatesTo
 @hypothesis.given(relates_to=non_empty_relates_to)
 def test_relates_to_logical_id_returns_none_when_not_replaces(relates_to: RelatesTo):
     assert relates_to.logical_id is None
+
+
+@hypothesis.given(coding=builds(Coding, system=just(SSP.SYSTEM), code=just(SSP.CODE)))
+def coding_is_ssp(coding: Coding):
+    assert coding.is_ssp()
+
+
+@hypothesis.given(coding=builds(Coding, system=text(), code=text()))
+def coding_is_not_ssp(coding: Coding):
+    assert not coding.is_ssp()
