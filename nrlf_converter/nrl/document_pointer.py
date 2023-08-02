@@ -208,7 +208,7 @@ class DocumentPointer(ValidatedModel):
     content: list[ContentItem] = validate_against_schema(
         schema=ContentItem, is_list=True
     )
-    context: Context = validate_against_schema(schema=Context)
+    context: Optional[Context] = validate_against_schema(schema=Context, optional=True)
     logicalIdentifier: LogicalIdentifier = validate_against_schema(
         schema=LogicalIdentifier
     )

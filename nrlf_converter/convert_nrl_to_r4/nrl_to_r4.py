@@ -135,11 +135,15 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             if _document_pointer.content
             else []
         ),
-        context=DocumentReferenceContext(
-            period=_document_pointer.context.period,
-            practiceSetting=CodeableConcept(
-                coding=_document_pointer.context.practiceSetting.practiceSettingCoding
-            ),
+        context=(
+            DocumentReferenceContext(
+                period=_document_pointer.context.period,
+                practiceSetting=CodeableConcept(
+                    coding=_document_pointer.context.practiceSetting.practiceSettingCoding
+                ),
+            )
+            if _document_pointer.context
+            else None
         ),
     )
     return document_reference.dict()
