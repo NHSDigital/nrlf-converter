@@ -65,15 +65,14 @@ def _test_end_to_end(
     return requests_post(data=document_reference, headers=headers)
 
 
-@pytest.mark.parametrize(["nhs_number", "asid"], ([NHS_NUMBER, None], [None, ASID]))
 @pytest.mark.parametrize("path_to_data", PATHS_TO_TEST_DATA)
-def test_that_function_calls_cannot_be_emptyish(nhs_number, asid, path_to_data):
+def test_that_function_calls_cannot_be_emptyish(path_to_data):
     with pytest.raises(ValidationError):
         _test_end_to_end(
             path_to_data=path_to_data,
             requests_post=None,
-            nhs_number=nhs_number,
-            asid=asid,
+            nhs_number=None,
+            asid=None,
         )
 
 

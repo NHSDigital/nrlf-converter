@@ -11,6 +11,7 @@ from nrlf_converter.nrl.constants import (
     RELATES_TO_REPLACES_IDENTIFIER_REGEXES,
     RELATES_TO_REPLACES_REFERENCE_REGEXES,
     REPLACES,
+    SSP,
     UPDATE_DATE_FORMAT,
 )
 from nrlf_converter.nrl.errors import BadRelatesTo, CustodianError
@@ -44,6 +45,9 @@ class Coding(ValidatedModel):
     )
     userSelected: Optional[bool] = validate_against_schema(schema=bool, optional=True)
     version: Optional[str] = validate_against_schema(schema=str, optional=True)
+
+    def is_ssp(self):
+        return (self.system == SSP.SYSTEM) and (self.code == SSP.CODE)
 
 
 @dataclass
@@ -204,7 +208,7 @@ class DocumentPointer(ValidatedModel):
     content: list[ContentItem] = validate_against_schema(
         schema=ContentItem, is_list=True
     )
-    context: Context = validate_against_schema(schema=Context)
+    context: Optional[Context] = validate_against_schema(schema=Context, optional=True)
     logicalIdentifier: LogicalIdentifier = validate_against_schema(
         schema=LogicalIdentifier
     )
@@ -235,3 +239,6 @@ class DocumentPointer(ValidatedModel):
                 f" using pattern '{CUSTODIAN_ODS_REGEX.pattern}'"
             )
         return result.groupdict()["ods_code"]
+
+    def is_ssp(self):
+        return any(content_item.format.is_ssp() for content_item in self.content)
