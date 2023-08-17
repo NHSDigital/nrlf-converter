@@ -4,7 +4,15 @@ from pathlib import Path
 
 import hypothesis
 import pytest
-from hypothesis.strategies import builds, data, datetimes, just, lists, text
+from hypothesis.strategies import (
+    builds,
+    data,
+    datetimes,
+    just,
+    lists,
+    sampled_from,
+    text,
+)
 
 from nrlf_converter import BadRelatesTo, CustodianError, ValidationError
 from nrlf_converter.nrl.constants import SSP, UPDATE_DATE_FORMAT
@@ -140,8 +148,19 @@ def test_ods_code_raises_custodian_error(document_pointer: DocumentPointer):
         code=just("replaces"),
         target=builds(
             Reference,
-            reference=just(
-                "https://psis-sync.national.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID"
+            reference=sampled_from(
+                [
+                    # Live:
+                    "https://psis-sync.national.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID",
+                    "https://clinicals.spineservices.nhs.uk/DocumentReference/THE_LOGICAL_ID",
+                    # Ref:
+                    "https://psis-sync.refnational.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID",
+                    "https://clinicals.refspineservices.nhs.uk/DocumentReference/THE_LOGICAL_ID",
+                    # INT:
+                    "https://msg.int.spine2.ncrs.nhs.uk/DocumentReference/THE_LOGICAL_ID",
+                    # Any url, but conforming to the structure:
+                    "https://it-could-be-any-url.com/DocumentReference/THE_LOGICAL_ID",
+                ]
             ),
             identifier=just(None),
         ),
