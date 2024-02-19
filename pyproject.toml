@@ -25,7 +25,7 @@ pre-commit = "^2.20.0"
 [tool.poetry.group.dev.dependencies]
 pytest-custom-exit-code = "^0.3.0"
 pydantic = "^1.10.7"
-hypothesis = "^6.74.0"
+hypothesis = "^6.98.8"
 requests = "^2.29.0"
 
 [build-system]
