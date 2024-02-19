@@ -8,7 +8,7 @@ REPLACES = "replaces"
 DEFAULT_SYSTEM = "http://snomed.info/sct"
 ODS_SYSTEM = "https://fhir.nhs.uk/Id/ods-organization-code"
 CUSTODIAN_ODS_REGEX = re.compile(
-    "^https://directory.spineservices.nhs.uk/STU3/Organization/(?P<ods_code>\w+)$"
+    "^https://directory.spineservices.nhs.uk/STU3/Organization/(?P<ods_code>[a-zA-Z0-9-_]+)$"
 )
 RELATES_TO_REPLACES_REFERENCE_REGEXES = [
     re.compile("^https://([^/]+)/DocumentReference/(?P<logical_id>.*)$")

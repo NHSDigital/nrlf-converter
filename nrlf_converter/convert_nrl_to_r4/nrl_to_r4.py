@@ -108,6 +108,14 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
         else []
     )
 
+    pointer_author: list[Reference] = [
+        Reference(
+            identifier=Identifier(
+                system=ODS_SYSTEM, value=_document_pointer.author_ods_code
+            )
+        )
+    ]
+
     document_reference = DocumentReference(
         id=_nrlf_id(
             ods_code=_document_pointer.ods_code,
@@ -120,7 +128,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             identifier=Identifier(system=NHS_NUMBER_SYSTEM_URL, value=nhs_number)
         ),
         date=_document_pointer.indexed,
-        author=(asid_author + [_document_pointer.author]),
+        author=(asid_author + pointer_author),
         custodian=Reference(
             identifier=Identifier(system=ODS_SYSTEM, value=_document_pointer.ods_code)
         ),

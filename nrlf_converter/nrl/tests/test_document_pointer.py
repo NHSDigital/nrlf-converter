@@ -8,6 +8,7 @@ from hypothesis.strategies import (
     builds,
     data,
     datetimes,
+    from_regex,
     just,
     lists,
     sampled_from,
@@ -15,7 +16,7 @@ from hypothesis.strategies import (
 )
 
 from nrlf_converter import BadRelatesTo, CustodianError, ValidationError
-from nrlf_converter.nrl.constants import SSP, UPDATE_DATE_FORMAT
+from nrlf_converter.nrl.constants import CUSTODIAN_ODS_REGEX, SSP, UPDATE_DATE_FORMAT
 from nrlf_converter.nrl.document_pointer import (
     Attachment,
     CodeableConcept,
@@ -73,12 +74,15 @@ ssp_content_items = lists(
     min_size=1,
 )
 
+author = builds(Reference, reference=from_regex(CUSTODIAN_ODS_REGEX))
+
+
 valid_document_pointer = builds(
     DocumentPointer,
     type=non_empty_coding,
     class_=non_empty_codeable_concept,
     indexed=iso_dates,
-    author=non_empty_reference,
+    author=author,
     custodian=builds(
         Reference,
         reference=just(
