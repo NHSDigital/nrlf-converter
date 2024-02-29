@@ -21,7 +21,7 @@ RELATES_TO_REPLACES_IDENTIFIER_REGEXES = [
 
 class SSP:
     CODE = "urn:nhs-ic:unstructured"
-    SYSTEM = "https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1"
+    SYSTEM = "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
 
 
 HTTPS_TO_SSP = partial(

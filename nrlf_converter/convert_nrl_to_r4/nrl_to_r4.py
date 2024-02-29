@@ -14,6 +14,7 @@ from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
     Attachment,
     CodeableConcept,
+    Coding,
     DocumentReference,
     DocumentReferenceContent,
     DocumentReferenceContext,
@@ -59,6 +60,13 @@ def _content_items(
 ) -> Generator[DocumentReferenceContent, None, None]:
     for content in content_items:
         attachment = asdict(content.attachment)
+        if content.extension:
+            for extension in content.extension:
+                extension.valueCodeableConcept.coding[
+                    0
+                ].system = (
+                    "https://fhir.nhs.uk/England/CodeSystem/England-NRLContentStability"
+                )
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
@@ -107,6 +115,11 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
         if asid
         else []
     )
+    record_type = Coding(
+        code=_document_pointer.type.code,
+        display=_document_pointer.type.display,
+        system="https://fhir.nhs.uk/England/CodeSystem/England-NRLRecordType",
+    )
 
     pointer_author: list[Reference] = [
         Reference(
@@ -122,7 +135,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             logical_id=_document_pointer.logicalIdentifier.logicalId,
         ),
         status=_document_pointer.status,
-        type=CodeableConcept(coding=[_document_pointer.type]),
+        type=CodeableConcept(coding=[record_type]),
         category=[_document_pointer.class_] if _document_pointer.class_ else None,
         subject=Reference(
             identifier=Identifier(system=NHS_NUMBER_SYSTEM_URL, value=nhs_number)
