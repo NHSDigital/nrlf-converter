@@ -59,13 +59,6 @@ def _content_items(
 ) -> Generator[DocumentReferenceContent, None, None]:
     for content in content_items:
         attachment = asdict(content.attachment)
-        if content.extension:
-            for extension in content.extension:
-                extension.valueCodeableConcept.coding[
-                    0
-                ].system = (
-                    "https://fhir.nhs.uk/England/CodeSystem/England-NRLContentStability"
-                )
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
