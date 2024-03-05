@@ -249,6 +249,10 @@ def test__content_items(
 
     for item, _item in zip(ssp_content_items, ssp_document_reference_content_items):
         assert asdict(item.format) == asdict(_item.format)
+        assert (
+            _item.format.system
+            == "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
+        )
         assert asdict(item.attachment) != asdict(_item.attachment)
         item.attachment.url = "ssp://foo.bar"
         assert asdict(item.attachment) == asdict(_item.attachment)
