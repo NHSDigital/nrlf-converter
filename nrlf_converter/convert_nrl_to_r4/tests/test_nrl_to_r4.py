@@ -245,14 +245,19 @@ def test__content_items(
         non_ssp_content_items, non_ssp_document_reference_content_items
     ):
         assert asdict(item.attachment) == asdict(_item.attachment)
+        assert asdict(item.format) != asdict(_item.format)
+        item.format.system = (
+            "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
+        )
         assert asdict(item.format) == asdict(_item.format)
 
     for item, _item in zip(ssp_content_items, ssp_document_reference_content_items):
-        assert asdict(item.format) == asdict(_item.format)
-        assert (
-            _item.format.system
-            == "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
+        assert asdict(item.format) != asdict(_item.format)
+        item.format.system = (
+            "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
         )
+        assert asdict(item.format) == asdict(_item.format)
+
         assert asdict(item.attachment) != asdict(_item.attachment)
         item.attachment.url = "ssp://foo.bar"
         assert asdict(item.attachment) == asdict(_item.attachment)

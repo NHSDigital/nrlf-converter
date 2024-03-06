@@ -9,12 +9,16 @@ from nrlf_converter.nrl.constants import (
     NHS_NUMBER_SYSTEM_URL,
     ODS_SYSTEM,
 )
-from nrlf_converter.nrl.document_pointer import ContentItem, DocumentPointer, RelatesTo
+from nrlf_converter.nrl.document_pointer import (
+    Coding,
+    ContentItem,
+    DocumentPointer,
+    RelatesTo,
+)
 from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
     Attachment,
     CodeableConcept,
-    Coding,
     DocumentReference,
     DocumentReferenceContent,
     DocumentReferenceContext,
@@ -63,7 +67,7 @@ def _content_items(
         format = Coding(
             code=content.format.code,
             display=content.format.display,
-            system="https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1",
+            system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
