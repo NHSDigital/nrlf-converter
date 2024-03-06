@@ -14,6 +14,7 @@ from nrlf_converter.r4.constants import ID_SEPARATOR
 from nrlf_converter.r4.document_reference import (
     Attachment,
     CodeableConcept,
+    Coding,
     DocumentReference,
     DocumentReferenceContent,
     DocumentReferenceContext,
@@ -59,11 +60,16 @@ def _content_items(
 ) -> Generator[DocumentReferenceContent, None, None]:
     for content in content_items:
         attachment = asdict(content.attachment)
+        format = Coding(
+            code=content.format.code,
+            display=content.format.display,
+            system="https://fhir.nhs.uk/STU3/CodeSystem/NRL-FormatCode-1",
+        )
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
-            attachment=Attachment(**attachment), format=content.format
+            attachment=Attachment(**attachment), format=format
         )
 
 
