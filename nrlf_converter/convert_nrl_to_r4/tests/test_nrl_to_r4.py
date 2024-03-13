@@ -25,6 +25,7 @@ from nrlf_converter.convert_nrl_to_r4.nrl_to_r4 import (
     nrl_to_r4,
     reject_empty_args,
 )
+from nrlf_converter.nrl.constants import CUSTODIAN_ODS_REGEX
 from nrlf_converter.nrl.document_pointer import ContentItem as ContentItem
 from nrlf_converter.nrl.document_pointer import DocumentPointer
 from nrlf_converter.nrl.tests.test_document_pointer import (
@@ -85,6 +86,32 @@ def test__nrl_to_r4_ssp_type(
     _document_reference_str = json.dumps(document_reference.dict(), default=json_serial)
     _document_reference = json.loads(_document_reference_str)
     assert _document_reference == document_reference_json
+
+
+@hypothesis.given(document_pointer=valid_document_pointer, asid=just("230811201350"))
+def test__nrl_to_r4_author_reference(document_pointer: DocumentPointer, asid: str):
+    _document_pointer = asdict(document_pointer)
+    _document_pointer["class"] = _document_pointer.pop("class_")
+    document_reference_json = nrl_to_r4(
+        document_pointer=_document_pointer, nhs_number="3964056618", asid=asid
+    )
+    expected_author = [
+        {
+            "identifier": {
+                "system": "https://fhir.nhs.uk/Id/nhsSpineASID",
+                "value": "230811201350",
+            }
+        },
+        {
+            "identifier": {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": CUSTODIAN_ODS_REGEX.match(
+                    document_pointer.author.reference
+                ).groupdict()["ods_code"],
+            }
+        },
+    ]
+    assert document_reference_json["author"] == expected_author
 
 
 @hypothesis.given(

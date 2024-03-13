@@ -14,7 +14,7 @@ from nrlf_converter.nrl.constants import (
     SSP,
     UPDATE_DATE_FORMAT,
 )
-from nrlf_converter.nrl.errors import BadRelatesTo, CustodianError
+from nrlf_converter.nrl.errors import AuthorError, BadRelatesTo, CustodianError
 from nrlf_converter.utils.validation.model import ValidatedModel
 from nrlf_converter.utils.validation.validators import (
     validate_against_schema,
@@ -236,6 +236,16 @@ class DocumentPointer(ValidatedModel):
         if result is None:
             raise CustodianError(
                 f"Could not parse an ODS code from '{self.custodian.reference}'"
+                f" using pattern '{CUSTODIAN_ODS_REGEX.pattern}'"
+            )
+        return result.groupdict()["ods_code"]
+
+    @property
+    def author_ods_code(self):
+        result: re.Match = CUSTODIAN_ODS_REGEX.match(self.author.reference)
+        if result is None:
+            raise AuthorError(
+                f"Could not parse an ODS code from '{self.author.reference}'"
                 f" using pattern '{CUSTODIAN_ODS_REGEX.pattern}'"
             )
         return result.groupdict()["ods_code"]
