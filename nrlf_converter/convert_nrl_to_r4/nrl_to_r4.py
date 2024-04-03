@@ -138,7 +138,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             identifier=Identifier(system=NHS_NUMBER_SYSTEM_URL, value=nhs_number)
         ),
         date=_document_pointer.indexed,
-        author=(asid_author + pointer_author),
+        author=pointer_author,
         custodian=Reference(
             identifier=Identifier(system=ODS_SYSTEM, value=_document_pointer.ods_code)
         ),
@@ -159,6 +159,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
                 practiceSetting=CodeableConcept(
                     coding=_document_pointer.context.practiceSetting.practiceSettingCoding
                 ),
+                related=asid_author,
             )
             if _document_pointer.context
             else None
