@@ -98,12 +98,6 @@ def test__nrl_to_r4_author_reference(document_pointer: DocumentPointer, asid: st
     expected_author = [
         {
             "identifier": {
-                "system": "https://fhir.nhs.uk/Id/nhsSpineASID",
-                "value": "230811201350",
-            }
-        },
-        {
-            "identifier": {
                 "system": "https://fhir.nhs.uk/Id/ods-organization-code",
                 "value": CUSTODIAN_ODS_REGEX.match(
                     document_pointer.author.reference
@@ -111,6 +105,16 @@ def test__nrl_to_r4_author_reference(document_pointer: DocumentPointer, asid: st
             }
         },
     ]
+    expected_related = [
+        {
+            "identifier": {
+                "system": "https://fhir.nhs.uk/Id/nhsSpineASID",
+                "value": "230811201350",
+            }
+        },
+    ]
+
+    assert document_reference_json["context"]["related"] == expected_related
     assert document_reference_json["author"] == expected_author
 
 

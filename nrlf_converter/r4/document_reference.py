@@ -73,6 +73,7 @@ class DocumentReferenceContent:
 class DocumentReferenceContext:
     period: Optional[Period] = None
     practiceSetting: Optional[CodeableConcept] = None
+    related: List[Reference] = None
 
 
 @dataclass
