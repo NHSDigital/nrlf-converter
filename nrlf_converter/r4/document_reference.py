@@ -63,9 +63,16 @@ class Attachment:
 
 
 @dataclass
+class Extension:
+    valueCodeableConcept: CodeableConcept
+    url: str
+
+
+@dataclass
 class DocumentReferenceContent:
     attachment: Attachment
     format: Coding
+    extension: Optional[list[Extension]] = None
     id: Optional[str] = None
 
 

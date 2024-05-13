@@ -24,6 +24,7 @@ from nrlf_converter.nrl.document_pointer import (
     ContentItem,
     Context,
     DocumentPointer,
+    Extension,
     Identifier,
     LogicalIdentifier,
     Metadata,
@@ -31,6 +32,7 @@ from nrlf_converter.nrl.document_pointer import (
     PracticeSetting,
     Reference,
     RelatesTo,
+    ValueCodeableConcept,
 )
 
 PATH_TO_HERE = Path(__file__).parent
@@ -53,12 +55,25 @@ non_empty_identifier = builds(Identifier, system=non_empty_str, value=non_empty_
 non_empty_reference = builds(
     Reference, reference=non_empty_str, identifier=non_empty_identifier
 )
+non_empty_value_codeable_concept = builds(
+    ValueCodeableConcept, coding=non_empty_list_of_coding
+)
+
 non_empty_attachment = builds(Attachment, url=non_empty_str, contentType=non_empty_str)
+non_empty_extension = builds(
+    Extension, url=non_empty_str, valueCodeableConcept=non_empty_value_codeable_concept
+)
+non_empty_list_of_extensions = lists(non_empty_extension, min_size=1, max_size=1)
 non_empty_codeable_concept = builds(CodeableConcept, coding=non_empty_list_of_coding)
 non_empty_relates_to = builds(RelatesTo, code=non_empty_str, target=non_empty_reference)
 
 non_ssp_content_items = lists(
-    builds(ContentItem, format=non_empty_coding, attachment=non_empty_attachment),
+    builds(
+        ContentItem,
+        format=non_empty_coding,
+        attachment=non_empty_attachment,
+        extension=non_empty_list_of_extensions,
+    ),
     min_size=1,
 )
 ssp_content_items = lists(

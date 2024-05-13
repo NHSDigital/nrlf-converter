@@ -254,6 +254,8 @@ def test__content_items(
             "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
         )
         assert asdict(item.format) == asdict(_item.format)
+        assert len((item.extension)) > 0
+        assert item.extension == _item.extension
 
     for item, _item in zip(ssp_content_items, ssp_document_reference_content_items):
         assert asdict(item.format) != asdict(_item.format)

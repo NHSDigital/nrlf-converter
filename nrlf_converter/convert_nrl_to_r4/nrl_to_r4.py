@@ -73,7 +73,9 @@ def _content_items(
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
-            attachment=Attachment(**attachment), format=format
+            attachment=Attachment(**attachment),
+            format=format,
+            extension=content.extension,
         )
 
 
