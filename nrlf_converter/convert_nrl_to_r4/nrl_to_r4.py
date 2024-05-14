@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from functools import wraps
 from itertools import chain
 from typing import Generator, List, Union
@@ -63,17 +62,26 @@ def _content_items(
     content_items: List[ContentItem],
 ) -> Generator[DocumentReferenceContent, None, None]:
     for content in content_items:
-        attachment = asdict(content.attachment)
+        attachment = Attachment(
+            contentType=content.attachment.contentType,
+            url=_https_to_ssp(content.attachment.url)
+            if content.format.is_ssp()
+            else content.attachment.url,
+            language=content.attachment.language,
+            title=content.attachment.title,
+            creation=content.attachment.creation,
+            data=content.attachment.data,
+            hash=content.attachment.hash,
+            size=content.attachment.size,
+        )
         format = Coding(
             code=content.format.code,
             display=content.format.display,
             system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
-        if content.format.is_ssp():
-            attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
-            attachment=Attachment(**attachment),
+            attachment=attachment,
             format=format,
             extension=content.extension,
         )
@@ -133,6 +141,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             ods_code=_document_pointer.ods_code,
             logical_id=_document_pointer.logicalIdentifier.logicalId,
         ),
+        masterIdentifier=_document_pointer.masterIdentifier,
         status=_document_pointer.status,
         type=CodeableConcept(coding=[_document_pointer.type]),
         category=[_document_pointer.class_] if _document_pointer.class_ else None,

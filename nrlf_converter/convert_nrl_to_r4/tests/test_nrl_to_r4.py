@@ -66,6 +66,7 @@ def test__nrl_to_r4(document_pointer: DocumentPointer, asid: str):
     _document_reference_str = json.dumps(document_reference.dict(), default=json_serial)
     _document_reference = json.loads(_document_reference_str)
     assert _document_reference == document_reference_json
+    assert document_reference_json.get("masterIdentifier") != None
 
 
 @hypothesis.given(
@@ -254,8 +255,15 @@ def test__content_items(
             "https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode"
         )
         assert asdict(item.format) == asdict(_item.format)
-        assert len((item.extension)) > 0
-        assert item.extension == _item.extension
+        assert len((_item.extension)) > 0 and item.extension == _item.extension
+        assert (
+            _item.attachment.size == 1000
+            and item.attachment.size == _item.attachment.size
+        )
+        assert (
+            _item.attachment.title != None
+            and item.attachment.title == _item.attachment.title
+        )
 
     for item, _item in zip(ssp_content_items, ssp_document_reference_content_items):
         assert asdict(item.format) != asdict(_item.format)

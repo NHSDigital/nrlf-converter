@@ -9,6 +9,7 @@ from hypothesis.strategies import (
     data,
     datetimes,
     from_regex,
+    integers,
     just,
     lists,
     sampled_from,
@@ -47,6 +48,7 @@ valid_datetimes = datetimes(
 iso_dates = valid_datetimes.map(lambda dt: dt.isoformat())
 nrl_dates = valid_datetimes.map(lambda dt: dt.strftime(UPDATE_DATE_FORMAT))
 non_empty_str = text(min_size=1)
+non_empty_int = integers(min_value=1000, max_value=1000)
 non_empty_coding = builds(
     Coding, code=non_empty_str, system=non_empty_str, display=non_empty_str
 )
@@ -59,7 +61,13 @@ non_empty_value_codeable_concept = builds(
     ValueCodeableConcept, coding=non_empty_list_of_coding
 )
 
-non_empty_attachment = builds(Attachment, url=non_empty_str, contentType=non_empty_str)
+non_empty_attachment = builds(
+    Attachment,
+    url=non_empty_str,
+    contentType=non_empty_str,
+    size=non_empty_int,
+    title=non_empty_str,
+)
 non_empty_extension = builds(
     Extension, url=non_empty_str, valueCodeableConcept=non_empty_value_codeable_concept
 )

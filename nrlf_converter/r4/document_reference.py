@@ -96,6 +96,7 @@ class DocumentReference:
     content: List[DocumentReferenceContent]
     context: DocumentReferenceContext
     # Optionals and default values
+    masterIdentifier: Optional[Identifier] = None
     resourceType: Literal["DocumentReference"] = "DocumentReference"
     relatesTo: Optional[List[DocumentReferenceRelatesTo]] = None
 
