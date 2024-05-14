@@ -15,13 +15,21 @@
     "practiceSetting": {
       "practiceSettingCoding": [
         {
-          "code": null,
-          "system": null,
-          "display": null
+          "system": "http://snomed.info/sct",
+          "code": "310167005",
+          "display": "Urology service"
         }
       ],
       "practiceSettingText": null
-    }
+    },
+    "related": [
+      {
+        "identifier": {
+          "system": "https://fhir.nhs.uk/Id/nhsSpineASID",
+          "value": "200000000610"
+        }
+      }
+    ]
   },
   "content": [
     {
