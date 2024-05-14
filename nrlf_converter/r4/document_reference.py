@@ -72,7 +72,7 @@ class Extension:
 class DocumentReferenceContent:
     attachment: Attachment
     format: Coding
-    extension: Optional[list[Extension]] = None
+    extension: Optional[List[Extension]] = None
     id: Optional[str] = None
 
 
