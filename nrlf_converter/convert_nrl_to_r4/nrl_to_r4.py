@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from functools import wraps
 from itertools import chain
 from typing import Generator, List, Union
@@ -62,26 +63,21 @@ def _content_items(
     content_items: List[ContentItem],
 ) -> Generator[DocumentReferenceContent, None, None]:
     for content in content_items:
-        attachment = Attachment(
-            contentType=content.attachment.contentType,
-            url=_https_to_ssp(content.attachment.url)
-            if content.format.is_ssp()
-            else content.attachment.url,
-            language=content.attachment.language,
-            title=content.attachment.title,
-            creation=content.attachment.creation,
-            data=content.attachment.data,
-            hash=content.attachment.hash,
-            size=content.attachment.size,
-        )
+        attachment = asdict(content.attachment)
         format = Coding(
             code=content.format.code,
             display=content.format.display,
             system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
+        if content.extension:
+            content.extension[0].valueCodeableConcept.coding[
+                0
+            ].system = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
+        if content.format.is_ssp():
+            attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
-            attachment=attachment,
+            attachment=Attachment(**attachment),
             format=format,
             extension=content.extension,
         )
