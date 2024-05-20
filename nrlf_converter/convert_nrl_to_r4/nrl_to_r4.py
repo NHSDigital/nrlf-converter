@@ -70,9 +70,9 @@ def _content_items(
             system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
         if content.extension:
-            content.extension[0].valueCodeableConcept.coding[
+            content.extension[
                 0
-            ].system = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
+            ].url = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
