@@ -72,7 +72,9 @@ def _content_items(
         if content.extension:
             content.extension[0].valueCodeableConcept.coding[
                 0
-            ].system = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
+            ].system = (
+                "https://fhir.nhs.uk/England/CodeSystem/England-NRLContentStability"
+            )
             content.extension[
                 0
             ].url = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
