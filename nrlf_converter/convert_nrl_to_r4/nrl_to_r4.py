@@ -23,6 +23,7 @@ from nrlf_converter.r4.document_reference import (
     DocumentReferenceContent,
     DocumentReferenceContext,
     DocumentReferenceRelatesTo,
+    Extension,
     Identifier,
     Reference,
 )
@@ -69,6 +70,7 @@ def _content_items(
             display=content.format.display,
             system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
+        extensions = []
         if content.extension:
             content.extension[0].valueCodeableConcept.coding[
                 0
@@ -78,13 +80,14 @@ def _content_items(
             content.extension[
                 0
             ].url = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
+            extensions = [asdict(extension) for extension in content.extension]
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
             attachment=Attachment(**attachment),
             format=format,
-            extension=content.extension,
+            extension=[Extension(**extension) for extension in extensions],
         )
 
 

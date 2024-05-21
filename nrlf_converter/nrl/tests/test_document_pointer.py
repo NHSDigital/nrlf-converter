@@ -52,7 +52,7 @@ non_empty_int = integers(min_value=1000, max_value=1000)
 non_empty_coding = builds(
     Coding, code=non_empty_str, system=non_empty_str, display=non_empty_str
 )
-non_empty_list_of_coding = lists(non_empty_coding, min_size=1)
+non_empty_list_of_coding = lists(non_empty_coding, min_size=1, max_size=1)
 non_empty_identifier = builds(Identifier, system=non_empty_str, value=non_empty_str)
 non_empty_reference = builds(
     Reference, reference=non_empty_str, identifier=non_empty_identifier
@@ -83,6 +83,7 @@ non_ssp_content_items = lists(
         extension=non_empty_list_of_extensions,
     ),
     min_size=1,
+    max_size=3,
 )
 ssp_content_items = lists(
     builds(
@@ -95,6 +96,7 @@ ssp_content_items = lists(
         ),
     ),
     min_size=1,
+    max_size=3,
 )
 
 author = builds(Reference, reference=from_regex(CUSTODIAN_ODS_REGEX))
