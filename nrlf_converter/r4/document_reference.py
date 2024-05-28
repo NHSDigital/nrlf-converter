@@ -63,9 +63,16 @@ class Attachment:
 
 
 @dataclass
+class Extension:
+    valueCodeableConcept: CodeableConcept
+    url: str
+
+
+@dataclass
 class DocumentReferenceContent:
     attachment: Attachment
     format: Coding
+    extension: Optional[List[Extension]] = None
     id: Optional[str] = None
 
 
@@ -89,6 +96,7 @@ class DocumentReference:
     content: List[DocumentReferenceContent]
     context: DocumentReferenceContext
     # Optionals and default values
+    masterIdentifier: Optional[Identifier] = None
     resourceType: Literal["DocumentReference"] = "DocumentReference"
     relatesTo: Optional[List[DocumentReferenceRelatesTo]] = None
 

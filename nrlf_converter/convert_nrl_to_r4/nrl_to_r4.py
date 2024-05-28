@@ -23,6 +23,7 @@ from nrlf_converter.r4.document_reference import (
     DocumentReferenceContent,
     DocumentReferenceContext,
     DocumentReferenceRelatesTo,
+    Extension,
     Identifier,
     Reference,
 )
@@ -69,11 +70,24 @@ def _content_items(
             display=content.format.display,
             system="https://fhir.nhs.uk/England/CodeSystem/England-NRLFormatCode",
         )
+        extensions = []
+        if content.extension:
+            content.extension[0].valueCodeableConcept.coding[
+                0
+            ].system = (
+                "https://fhir.nhs.uk/England/CodeSystem/England-NRLContentStability"
+            )
+            content.extension[
+                0
+            ].url = "https://fhir.nhs.uk/England/StructureDefinition/Extension-England-ContentStability"
+            extensions = [asdict(extension) for extension in content.extension]
         if content.format.is_ssp():
             attachment["url"] = _https_to_ssp(content.attachment.url)
 
         yield DocumentReferenceContent(
-            attachment=Attachment(**attachment), format=format
+            attachment=Attachment(**attachment),
+            format=format,
+            extension=[Extension(**extension) for extension in extensions],
         )
 
 
@@ -131,6 +145,7 @@ def nrl_to_r4(document_pointer: dict, nhs_number: str, asid: str = None) -> dict
             ods_code=_document_pointer.ods_code,
             logical_id=_document_pointer.logicalIdentifier.logicalId,
         ),
+        masterIdentifier=_document_pointer.masterIdentifier,
         status=_document_pointer.status,
         type=CodeableConcept(coding=[_document_pointer.type]),
         category=[_document_pointer.class_] if _document_pointer.class_ else None,

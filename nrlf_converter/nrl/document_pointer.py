@@ -58,9 +58,28 @@ class Metadata(ValidatedModel):
 
 
 @dataclass
+class CodeableConcept(ValidatedModel):
+    coding: list[Coding] = validate_against_schema(schema=Coding, is_list=True)
+    text: Optional[str] = validate_against_schema(schema=str, optional=True)
+
+
+@dataclass
 class Period(ValidatedModel):
     start: Optional[datetime] = validate_datetime(optional=True)
     end: Optional[datetime] = validate_datetime(optional=True)
+
+
+@dataclass
+class Identifier(ValidatedModel):
+    system: str = validate_against_schema(schema=str)
+    value: str = validate_against_schema(schema=str)
+
+    use: Optional[str] = validate_against_schema(schema=str, optional=True)
+    type: Optional[CodeableConcept] = validate_against_schema(
+        schema=CodeableConcept, optional=True
+    )
+    period: Optional[Period] = validate_against_schema(schema=Period, optional=True)
+    assigner: Optional[Reference] = validate_against_schema(schema=dict, optional=True)
 
 
 @dataclass
@@ -74,9 +93,20 @@ class PracticeSetting(ValidatedModel):
 
 
 @dataclass
+class Related(ValidatedModel):
+    reference: Optional[str] = validate_against_schema(schema=str, optional=True)
+    identifier: Optional[Identifier] = validate_against_schema(
+        schema=Identifier, optional=True
+    )
+
+
+@dataclass
 class Context(ValidatedModel):
     period: Optional[Period] = validate_against_schema(schema=Period, optional=True)
     practiceSetting: PracticeSetting = validate_against_schema(schema=PracticeSetting)
+    related: Optional[list[Related]] = validate_against_schema(
+        schema=Related, optional=True, is_list=True
+    )
 
 
 @dataclass
@@ -102,27 +132,8 @@ class ContentItem(ValidatedModel):
 
 
 @dataclass
-class CodeableConcept(ValidatedModel):
-    coding: list[Coding] = validate_against_schema(schema=Coding, is_list=True)
-    text: Optional[str] = validate_against_schema(schema=str, optional=True)
-
-
-@dataclass
 class LogicalIdentifier(ValidatedModel):
     logicalId: str = validate_against_schema(schema=str)
-
-
-@dataclass
-class Identifier(ValidatedModel):
-    system: str = validate_against_schema(schema=str)
-    value: str = validate_against_schema(schema=str)
-
-    use: Optional[str] = validate_against_schema(schema=str, optional=True)
-    type: Optional[CodeableConcept] = validate_against_schema(
-        schema=CodeableConcept, optional=True
-    )
-    period: Optional[Period] = validate_against_schema(schema=Period, optional=True)
-    assigner: Optional[Reference] = validate_against_schema(schema=dict, optional=True)
 
 
 @dataclass

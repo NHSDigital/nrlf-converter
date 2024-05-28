@@ -21,7 +21,7 @@ NHS_NUMBER = "3964056618"
 ASID = "230811201350"
 ODS_CODE = "Y05868"
 DOC_TYPE = "736253002"
-SUPERSEDE_ERROR_MSG = "At least one document pointer cannot be deleted because it belongs to another organisation"
+SUPERSEDE_ERROR_MSG = "The relatesTo target identifier value does not include the expected ODS code for this organisation"
 
 
 def _hack_permissions(document_reference: dict, uuid: str):
