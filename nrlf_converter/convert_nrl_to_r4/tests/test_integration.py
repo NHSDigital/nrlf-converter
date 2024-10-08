@@ -22,6 +22,7 @@ ASID = "230811201350"
 ODS_CODE = "Y05868"
 DOC_TYPE = "736253002"
 SUPERSEDE_ERROR_MSG = "The relatesTo target identifier value does not include the expected ODS code for this organisation"
+CATEGORY_MISSING_ERROR_MSG = "The required field 'category' is missing"
 
 
 def _hack_permissions(document_reference: dict, uuid: str):
@@ -109,7 +110,9 @@ def test_validate_against_nrlf(path_to_data):
         path_to_data=path_to_data, requests_post=requests_post
     )
 
-    if status_code is HTTPStatus.BAD_REQUEST:
+    if "NRLF-626-optional_class.json" in str(path_to_data):
+        assert message["issue"][0]["diagnostics"] == CATEGORY_MISSING_ERROR_MSG, message
+    elif status_code is HTTPStatus.BAD_REQUEST:
         assert message["issue"][0]["diagnostics"] == SUPERSEDE_ERROR_MSG, message
     else:
         assert status_code is HTTPStatus.CREATED, message
