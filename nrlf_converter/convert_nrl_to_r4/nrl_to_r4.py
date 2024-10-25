@@ -33,6 +33,9 @@ from nrlf_converter.utils.validation.errors import ValidationError
 
 
 def _nrlf_id(ods_code: str, logical_id: str):
+    # REF ods codes are as long as 12 characters, so we remove the last part of the legacy id.
+    if len(ods_code) > 6:
+        logical_id = logical_id[:36]
     return f"{ods_code}{ID_SEPARATOR}{logical_id}"
 
 
