@@ -1,5 +1,4 @@
 import json
-from datetime import datetime as dt
 from http import HTTPStatus
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -25,12 +24,10 @@ SUPERSEDE_ERROR_MSG = "The relatesTo target identifier value does not include th
 CATEGORY_MISSING_ERROR_MSG = "The required field 'category' is missing"
 
 
-def _hack_permissions(document_reference: dict, uuid: str):
+def _hack_permissions(document_reference: dict):
     old_ods_code = document_reference["custodian"]["identifier"]["value"]
     document_reference["custodian"]["identifier"]["value"] = ODS_CODE
-    document_reference["id"] = (
-        document_reference["id"].replace(old_ods_code, ODS_CODE) + uuid
-    )
+    document_reference["id"] = f"{ODS_CODE}-{uuid4()}"
     document_reference["type"]["coding"][0]["code"] = DOC_TYPE
     return document_reference
 
@@ -48,16 +45,14 @@ def _create_headers(uuid: str):
 def _test_end_to_end(
     path_to_data: Path, requests_post: FunctionType, nhs_number=NHS_NUMBER, asid=ASID
 ):
-    uuid = f"nhsd--nrl_to_r4--{dt.now().isoformat()}--{uuid4()}"
+    uuid = f"nhsd--nrl_to_r4--{uuid4()}"
 
     with open(path_to_data) as f:
         document_reference = nrl_to_r4(
             document_pointer=json.load(f), nhs_number=nhs_number, asid=asid
         )
 
-    document_reference = _hack_permissions(
-        document_reference=document_reference, uuid=uuid
-    )
+    document_reference = _hack_permissions(document_reference=document_reference)
     headers = _create_headers(uuid=uuid)
 
     print("Making POST request with headers", headers)  # noqa: T201
@@ -103,7 +98,7 @@ def test_validate_against_nrlf(path_to_data):
     import requests
 
     def requests_post(data: dict, headers: dict):
-        r = requests.post(url=SANDBOX_URL, json=data, headers=headers)
+        r = requests.put(url=SANDBOX_URL, json=data, headers=headers)
         return HTTPStatus(r.status_code), r.json()
 
     status_code, message = _test_end_to_end(
